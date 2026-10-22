@@ -411,7 +411,8 @@ body.leitura .so-edicao { display: none !important; }
 {
  "versao": 1,
  "modo": "leitura",
- "geradoEm": "2026-10-22T17:33:28.000Z",
+ "geradoEm": "2026-10-22T18:20:40.000Z",
+ "registrosDesde": "2026-10-21",
  "atualizadoEm": "2026-10-22T17:25:16.948Z",
  "perfil": {
   "nome": "Vitória",
@@ -697,7 +698,7 @@ body.leitura .so-edicao { display: none !important; }
         el("button", { class: "btn", type: "button", onclick: abrirPerfil }, "Perfil")
       ),
       LEITURA
-        ? el("p", { class: "faixa-leitura", text: `Relatório de entregas · atualizado em ${D.geradoEm ? new Date(D.geradoEm).toLocaleDateString("pt-BR") : fmtData(hojeISO())}` })
+        ? el("p", { class: "faixa-leitura", text: `Relatório de entregas · ${D.registrosDesde ? `registros desde ${fmtData(D.registrosDesde)} · ` : ""}atualizado em ${D.geradoEm ? new Date(D.geradoEm).toLocaleDateString("pt-BR") : fmtData(hojeISO())}` })
         : el("p", { class: "aviso-salvo" + (arquivoEmDia ? "" : " pendente"), role: "status" },
             arquivoEmDia ? "✔ Arquivo em dia." : "● Alterações salvas só neste navegador. Use Memory card › Salvar cópia do painel para guardar o arquivo.")
     );
@@ -793,12 +794,9 @@ body.leitura .so-edicao { display: none !important; }
   function renderMes(listaSemPeriodo) {
     const c = listaSemPeriodo.filter(t => t.status === "Concluída" && t.fim);
     const h = new Date();
-    let n = 6;
-    if (F.periodo === "ano") n = Math.max(6, h.getMonth() + 1);
-    if (F.periodo === "tudo" && c.length) {
-      const primeira = c.map(t => lerData(t.fim)).sort((a, b) => a - b)[0];
-      n = Math.min(12, Math.max(6, (h.getFullYear() - primeira.getFullYear()) * 12 + h.getMonth() - primeira.getMonth() + 1));
-    }
+    // começa no mês da primeira entrega: sem meses zerados de antes do início dos registros
+    const primeira = c.length ? c.map(t => lerData(t.fim)).sort((a, b) => a - b)[0] : h;
+    const n = Math.min(12, Math.max(1, (h.getFullYear() - primeira.getFullYear()) * 12 + h.getMonth() - primeira.getMonth() + 1));
     const meses = [];
     for (let i = n - 1; i >= 0; i--) {
       const d = new Date(h.getFullYear(), h.getMonth() - i, 1);

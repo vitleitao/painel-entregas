@@ -155,6 +155,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .campo::placeholder { color: var(--texto-3); }
 .filtros .busca { flex: 1 1 200px; }
+.filtros .datas { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.filtros .data { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-pixel); font-size: 9px; color: var(--texto-2); }
 
 /* KPIs */
 .kpis { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
@@ -411,7 +413,7 @@ body.leitura .so-edicao { display: none !important; }
 {
  "versao": 1,
  "modo": "leitura",
- "geradoEm": "2026-10-22T18:24:51.000Z",
+ "geradoEm": "2026-10-22T18:34:06.000Z",
  "atualizadoEm": "2026-10-22T17:25:16.948Z",
  "perfil": {
   "nome": "Vitória",
@@ -606,7 +608,7 @@ body.leitura .so-edicao { display: none !important; }
   }
 
   /* ---------- filtros ---------- */
-  const F = { periodo: "tudo", categoria: "", busca: "" };
+  const F = { periodo: "tudo", categoria: "", busca: "", de: "", ate: "" };
   const PERIODOS = [["mes", "Este mês"], ["3m", "3 meses"], ["ano", "Ano"], ["tudo", "Tudo"]];
 
   function noPeriodo(s, per) {
@@ -618,13 +620,21 @@ body.leitura .so-edicao { display: none !important; }
     if (per === "ano") return d.getFullYear() === h.getFullYear();
     return true;
   }
+  // datas escolhidas: entra a entrega cujo período (início a fim) cruza as datas; com uma data só, vale aquele dia
+  function naData(t) {
+    const [de, ate] = [F.de || F.ate, F.ate || F.de].sort();
+    const ini = t.inicio || t.fim;
+    if (!ini) return false;
+    return ini <= ate && (t.fim || hojeISO()) >= de;
+  }
   function passa(t, ignorarPeriodo) {
     if (F.categoria && t.categoria !== F.categoria) return false;
     if (F.busca) {
       const alvo = norm([t.titulo, t.descricao, t.resultado, t.paraQuem, t.categoria, t.tipo, t.origem].join(" "));
       if (!alvo.includes(norm(F.busca))) return false;
     }
-    return ignorarPeriodo || noPeriodo(ref(t), F.periodo);
+    if (ignorarPeriodo) return true;
+    return F.de || F.ate ? naData(t) : noPeriodo(ref(t), F.periodo);
   }
 
   /* ---------- pontuação ---------- */
@@ -706,11 +716,20 @@ body.leitura .so-edicao { display: none !important; }
 
   /* ---------- filtros ---------- */
   function renderFiltros() {
+    const comData = Boolean(F.de || F.ate);
     const seg = el("div", { class: "seg", role: "group", "aria-label": "Período" },
       PERIODOS.map(([k, l]) => el("button", {
-        type: "button", "aria-pressed": String(F.periodo === k),
-        onclick: () => { F.periodo = k; render(); }
+        type: "button", "aria-pressed": String(!comData && F.periodo === k),
+        onclick: () => { F.periodo = k; F.de = F.ate = ""; render(); }
       }, l))
+    );
+    const data = (rot, chave) => el("label", { class: "data" }, rot,
+      el("input", { class: "campo", type: "date", value: F[chave], onchange: e => { F[chave] = e.target.value; F.periodo = "tudo"; render(); } })
+    );
+    const datas = el("div", { class: "datas", role: "group", "aria-label": "Datas" },
+      data("De", "de"),
+      data("Até", "ate"),
+      comData ? el("button", { class: "btn mini", type: "button", onclick: () => { F.de = F.ate = ""; render(); } }, "Limpar") : null
     );
     const cats = el("select", { class: "campo", "aria-label": "Categoria", onchange: e => { F.categoria = e.target.value; render(); } },
       el("option", { value: "" }, "Todas as categorias"),
@@ -720,7 +739,7 @@ body.leitura .so-edicao { display: none !important; }
       class: "campo busca", type: "search", placeholder: "Buscar entrega…", "aria-label": "Buscar", value: F.busca,
       oninput: e => { F.busca = e.target.value; renderConteudo(); }
     });
-    $("#filtros").replaceChildren(seg, cats, busca);
+    $("#filtros").replaceChildren(seg, datas, cats, busca);
   }
 
   /* ---------- KPIs ---------- */

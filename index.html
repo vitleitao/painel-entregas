@@ -411,7 +411,8 @@ body.leitura .so-edicao { display: none !important; }
 {
  "versao": 1,
  "modo": "leitura",
- "atualizadoEm": "2026-10-22T00:28:59.039Z",
+ "geradoEm": "2026-10-22T17:09:35.000Z",
+ "atualizadoEm": "2026-10-22T16:58:10.773Z",
  "perfil": {
   "nome": "Vitória",
   "cargo": "Estagiária",
@@ -419,10 +420,27 @@ body.leitura .so-edicao { display: none !important; }
  },
  "tarefas": [
   {
+   "id": "tmvjrxbs1",
+   "titulo": "Correção do monitor de execuções",
+   "descricao": "Depois da troca para execução agendada, a consulta de falhas tinha perdido a referência ao fluxo e retornava erro em todas as chamadas. Corrigida a consulta, o monitor passou também a incluir os fluxos compartilhados com a conta do time, que ficavam de fora, e a enviar o relatório mesmo quando a consulta de algum fluxo falha.",
+   "resultado": "Relatório diário por e-mail funcionando de novo, agora cobrindo também os fluxos compartilhados.",
+   "categoria": "Flow",
+   "tipo": "Ajuste",
+   "origem": "Iniciativa própria",
+   "paraQuem": "Crew Innovation",
+   "status": "Concluída",
+   "inicio": "2026-10-22",
+   "fim": "2026-10-22",
+   "impacto": "Médio",
+   "horasMes": null,
+   "link": "",
+   "alteradoEm": "2026-10-22T16:47:04.417Z"
+  },
+  {
    "id": "t1",
    "titulo": "Monitor de execuções com falha",
    "descricao": "Fluxo que consulta via API as execuções com status Failed dos fluxos do time e reúne tudo num só lugar, no lugar da conferência manual aba por aba.",
-   "resultado": "Acaba com a checagem manual diária das execuções: as falhas aparecem sem precisar procurar.",
+   "resultado": "Acaba com a checagem manual diária de cerca de 140 fluxos em 3 ambientes, abertos um a um, que tomava cerca de 1 hora por dia (1/6 da jornada): as falhas chegam por e-mail e o tempo vai direto para investigar a causa e avisar o time afetado.",
    "categoria": "Flow",
    "tipo": "Criação",
    "origem": "Iniciativa própria",
@@ -431,9 +449,9 @@ body.leitura .so-edicao { display: none !important; }
    "inicio": "2026-10-21",
    "fim": "2026-10-21",
    "impacto": "Alto",
-   "horasMes": null,
+   "horasMes": 19,
    "link": "",
-   "alteradoEm": "2026-10-21T15:00:00.000Z"
+   "alteradoEm": "2026-10-22T16:58:10.773Z"
   },
   {
    "id": "tmvisv03c",
@@ -453,8 +471,7 @@ body.leitura .so-edicao { display: none !important; }
    "alteradoEm": "2026-10-22T00:28:59.039Z"
   }
  ],
- "excluidas": {},
- "geradoEm": "2026-10-22T00:29:02.000Z"
+ "excluidas": {}
 }
 </script>
 
